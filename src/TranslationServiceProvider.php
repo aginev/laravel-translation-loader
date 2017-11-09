@@ -14,7 +14,7 @@ class TranslationServiceProvider extends IlluminateTranslationServiceProvider
     {
         parent::register();
 
-        $this->mergeConfigFrom(__DIR__.'/../config/laravel-translation-loader.php', 'laravel-translation-loader');
+        $this->mergeConfigFrom(__DIR__.'/../config/translation-loader.php', 'translation-loader');
     }
 
     /**
@@ -24,7 +24,7 @@ class TranslationServiceProvider extends IlluminateTranslationServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/laravel-translation-loader.php' => config_path('laravel-translation-loader.php'),
+                __DIR__.'/../config/translation-loader.php' => config_path('translation-loader.php'),
             ], 'config');
 
             if (! class_exists('CreateLanguageLinesTable')) {
@@ -45,9 +45,9 @@ class TranslationServiceProvider extends IlluminateTranslationServiceProvider
     protected function registerLoader()
     {
         $this->app->singleton('translation.loader', function ($app) {
-            $fileLoader = new FileLoader($app['files'], $app['path.lang']);
+            $class = config('translation-loader.translation_manager');
 
-            return new TranslationLoaderManager($fileLoader);
+            return new $class($app['files'], $app['path.lang']);
         });
     }
 }
